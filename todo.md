@@ -1,0 +1,31 @@
+# Project TODO
+
+- [x] Definir o modelo de dados para perfis, papéis, focos, denúncias, alertas, sensores, drones e leituras de risco.
+- [x] Configurar a estratégia de persistência e autenticação compatível com a infraestrutura do projeto, mantendo a integração Supabase preparada quando as credenciais forem fornecidas.
+- [x] Implementar os papéis exatamente como Usuário, Monitor e Admin, com controles de acesso por rota e ação.
+- [x] Criar a página inicial responsiva com missão, benefícios, recursos, chamadas para entrar, cadastrar-se e acessar a demonstração.
+- [x] Criar fluxos de login, cadastro, perfil e encerramento de sessão.
+- [x] Criar o layout operacional responsivo com navegação persistente e contexto de papel do usuário.
+- [x] Implementar o dashboard com indicadores de focos ativos, alertas, denúncias, sensores e drones.
+- [x] Implementar o mapa interativo com marcadores de ocorrência, denúncias e filtros baixo, médio, alto e crítico.
+- [x] Implementar cadastro de denúncia com descrição, foto, localização, validação e acompanhamento de status.
+- [x] Implementar a central de alertas com atualizações de ocorrências e estados de leitura.
+- [x] Implementar os painéis de sensores e drones com telemetria, estado operacional e rótulos explícitos de dados simulados.
+- [x] Implementar análise inteligente simulada de risco a partir de temperatura, umidade, fumaça e vento.
+- [x] Implementar estatísticas com gráficos de focos, denúncias e distribuição de risco.
+- [x] Implementar o painel administrativo para gerenciamento de usuários, focos, denúncias, sensores e drones.
+- [x] Implementar o modo demonstração com o botão exato “Simular Nova Queimada” e atualização dos fluxos e dados.
+- [x] Adotar tema ambiental e tecnológico de estilo elegante, com acessibilidade, estados de carregamento e responsividade.
+- [x] Criar testes automatizados para cálculos, permissões e mutações principais.
+- [x] Validar interfaces em desktop e celular, corrigir falhas e registrar o checkpoint de entrega.
+- [x] Criar uma camada de configuração para Supabase com pontos explícitos para autenticação, banco e armazenamento quando as credenciais forem fornecidas.
+- [x] Documentar a ativação futura do Supabase e as variáveis necessárias sem expor credenciais.
+- [x] Criar fluxo completo de autenticação com entrada, cadastro/onboarding e página de perfil editável, mantendo logout funcional.
+- [x] Restaurar um mapa geográfico interativo real com marcadores e filtros funcionais, ou documentar tecnicamente o bloqueio externo com fallback equivalente aceito.
+- [x] Filtrar denúncias por usuário no acompanhamento pessoal e manter visão operacional separada para Monitor/Admin.
+- [x] Persistir estado de leitura dos alertas no banco/API e refletir isso na central de alertas.
+- [x] Adicionar gerenciamento administrativo completo de denúncias no painel e remover limitações de listagem parcial para os cadastros administráveis.
+- [x] Adicionar testes automatizados para as mutações principais do FireGuard, incluindo criação de denúncia, simulação de nova queimada, marcação de alerta como lido e atualização de perfil/estados administrativos.
+- [x] Salvar um checkpoint de entrega após a validação final das interfaces em desktop e mobile.
+- [x] Implementar ou documentar tecnicamente um fluxo verificável de cadastro/onboarding distinto do login, integrado ao provedor de autenticação atual.
+- [x] Adicionar testes automatizados para as mutações administrativas de estado do FireGuard, cobrindo pelo menos atualização de focos, sensores, drones e alteração de papel por Admin.

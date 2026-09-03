@@ -1,11 +1,18 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import {
+  alerts,
+  drones,
+  fireIncidents,
+  InsertUser,
+  reports,
+  sensors,
+  users,
+} from "../drizzle/schema";
+import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -19,74 +26,143 @@ export async function getDb() {
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
-  }
-
+  if (!user.openId) throw new Error("User openId is required for upsert");
   const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot upsert user: database not available");
-    return;
-  }
+  if (!db) return;
 
-  try {
-    const values: InsertUser = {
-      openId: user.openId,
-    };
-    const updateSet: Record<string, unknown> = {};
-
-    const textFields = ["name", "email", "loginMethod"] as const;
-    type TextField = (typeof textFields)[number];
-
-    const assignNullable = (field: TextField) => {
-      const value = user[field];
-      if (value === undefined) return;
-      const normalized = value ?? null;
-      values[field] = normalized;
-      updateSet[field] = normalized;
-    };
-
-    textFields.forEach(assignNullable);
-
-    if (user.lastSignedIn !== undefined) {
-      values.lastSignedIn = user.lastSignedIn;
-      updateSet.lastSignedIn = user.lastSignedIn;
-    }
-    if (user.role !== undefined) {
-      values.role = user.role;
-      updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
-    }
-
-    if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
-    }
-
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
-    }
-
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
-      set: updateSet,
-    });
-  } catch (error) {
-    console.error("[Database] Failed to upsert user:", error);
-    throw error;
-  }
+  const values: InsertUser = {
+    openId: user.openId,
+    name: user.name ?? null,
+    email: user.email ?? null,
+    loginMethod: user.loginMethod ?? null,
+    lastSignedIn: user.lastSignedIn ?? new Date(),
+    role: user.role ?? (user.openId === ENV.ownerOpenId ? "admin" : "user"),
+  };
+  await db.insert(users).values(values).onDuplicateKeyUpdate({
+    set: {
+      name: values.name,
+      email: values.email,
+      loginMethod: values.loginMethod,
+      lastSignedIn: new Date(),
+    },
+  });
 }
 
 export async function getUserByOpenId(openId: string) {
   const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot get user: database not available");
-    return undefined;
-  }
-
+  if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-
-  return result.length > 0 ? result[0] : undefined;
+  return result[0];
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function ensureFireguardDemoData() {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await db.select({ id: fireIncidents.id }).from(fireIncidents).limit(1);
+  if (existing.length) return;
+
+  await db.insert(fireIncidents).values([
+    { title: "Reserva Serra Azul", riskLevel: "critical", status: "active", source: "simulation", latitude: -15.7942, longitude: -47.8822, temperature: 39, humidity: 15, smoke: 94, windSpeed: 31, isSimulated: true },
+    { title: "Corredor Verde Leste", riskLevel: "high", status: "monitoring", source: "sensor", latitude: -15.821, longitude: -47.91, temperature: 35, humidity: 22, smoke: 68, windSpeed: 21, isSimulated: true },
+    { title: "Área de Proteção Norte", riskLevel: "medium", status: "monitoring", source: "drone", latitude: -15.762, longitude: -47.854, temperature: 30, humidity: 34, smoke: 36, windSpeed: 13, isSimulated: true },
+    { title: "Bosque Comunitário", riskLevel: "low", status: "contained", source: "simulation", latitude: -15.846, longitude: -47.933, temperature: 25, humidity: 61, smoke: 12, windSpeed: 7, isSimulated: true },
+  ]);
+  await db.insert(sensors).values([
+    { name: "FG-SEN-014", location: "Reserva Serra Azul", status: "alert", latitude: -15.7942, longitude: -47.8822, temperature: 39, humidity: 15, smoke: 94, windSpeed: 31, isSimulated: true },
+    { name: "FG-SEN-021", location: "Corredor Verde Leste", status: "online", latitude: -15.821, longitude: -47.91, temperature: 35, humidity: 22, smoke: 68, windSpeed: 21, isSimulated: true },
+    { name: "FG-SEN-008", location: "Área de Proteção Norte", status: "online", latitude: -15.762, longitude: -47.854, temperature: 30, humidity: 34, smoke: 36, windSpeed: 13, isSimulated: true },
+  ]);
+  await db.insert(drones).values([
+    { name: "Águia 01", area: "Setor Central", status: "investigating", battery: 72, latitude: -15.7942, longitude: -47.8822, lastFlightAt: new Date(), isSimulated: true },
+    { name: "Águia 02", area: "Setor Leste", status: "patrolling", battery: 88, latitude: -15.821, longitude: -47.91, lastFlightAt: new Date(), isSimulated: true },
+    { name: "Águia 03", area: "Setor Norte", status: "charging", battery: 34, latitude: -15.762, longitude: -47.854, lastFlightAt: new Date(), isSimulated: true },
+  ]);
+  await db.insert(alerts).values([
+    { title: "Risco crítico detectado", message: "Leituras simuladas de fumaça e temperatura exigem atenção na Reserva Serra Azul.", severity: "critical", isRead: false, isSimulated: true },
+    { title: "Drone em rota de verificação", message: "Águia 01 está investigando o setor central com telemetria simulada.", severity: "warning", isRead: false, isSimulated: true },
+  ]);
+}
+
+export async function getFireguardOverview() {
+  const db = await getDb();
+  if (!db) return { incidents: [], reports: [], alerts: [], sensors: [], drones: [], users: [] };
+  const [incidentRows, reportRows, alertRows, sensorRows, droneRows, userRows] = await Promise.all([
+    db.select().from(fireIncidents).orderBy(desc(fireIncidents.createdAt)),
+    db.select().from(reports).orderBy(desc(reports.createdAt)),
+    db.select().from(alerts).orderBy(desc(alerts.createdAt)),
+    db.select().from(sensors).orderBy(desc(sensors.updatedAt)),
+    db.select().from(drones).orderBy(desc(drones.updatedAt)),
+    db.select().from(users).orderBy(desc(users.createdAt)),
+  ]);
+  return { incidents: incidentRows, reports: reportRows, alerts: alertRows, sensors: sensorRows, drones: droneRows, users: userRows };
+}
+
+export async function createFireIncident(data: typeof fireIncidents.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.insert(fireIncidents).values(data);
+  const [incident] = await db.select().from(fireIncidents).orderBy(desc(fireIncidents.id)).limit(1);
+  return incident;
+}
+
+export async function createAlert(data: typeof alerts.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.insert(alerts).values(data);
+}
+
+export async function createReport(data: typeof reports.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.insert(reports).values(data);
+  const [report] = await db.select().from(reports).orderBy(desc(reports.id)).limit(1);
+  return report;
+}
+
+export async function updateReportStatus(id: number, status: "received" | "investigating" | "resolved" | "dismissed") {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(reports).set({ status }).where(eq(reports.id, id));
+}
+
+export async function updateIncidentStatus(id: number, status: "active" | "monitoring" | "contained" | "resolved") {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(fireIncidents).set({ status }).where(eq(fireIncidents.id, id));
+}
+
+export async function updateSensorStatus(id: number, status: "online" | "alert" | "maintenance" | "offline") {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(sensors).set({ status }).where(eq(sensors.id, id));
+}
+
+export async function updateDroneStatus(id: number, status: "patrolling" | "investigating" | "charging" | "offline") {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(drones).set({ status }).where(eq(drones.id, id));
+}
+
+export async function updateUserRole(id: number, role: "user" | "monitor" | "admin") {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(users).set({ role }).where(eq(users.id, id));
+}
+
+export async function updateUserProfile(id: number, name: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(users).set({ name }).where(eq(users.id, id));
+}
+
+export async function getReportsForUser(reporterId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(reports).where(eq(reports.reporterId, reporterId)).orderBy(desc(reports.createdAt));
+}
+
+export async function markAlertRead(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(alerts).set({ isRead: true }).where(eq(alerts.id, id));
+}
