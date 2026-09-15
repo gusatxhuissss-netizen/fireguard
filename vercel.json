@@ -1,0 +1,14 @@
+{
+  "framework": "vite",
+  "buildCommand": "pnpm build:vercel",
+  "outputDirectory": "dist/public",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://fireguard-udkrxr4l.manus.space/api/:path*"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

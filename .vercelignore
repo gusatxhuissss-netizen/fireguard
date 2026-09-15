@@ -1,0 +1,8 @@
+node_modules
+.git
+.manus-logs
+.DS_Store
+*.log
+screenshots
+attached_assets
+storage

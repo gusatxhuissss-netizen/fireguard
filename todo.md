@@ -29,3 +29,15 @@
 - [x] Salvar um checkpoint de entrega após a validação final das interfaces em desktop e mobile.
 - [x] Implementar ou documentar tecnicamente um fluxo verificável de cadastro/onboarding distinto do login, integrado ao provedor de autenticação atual.
 - [x] Adicionar testes automatizados para as mutações administrativas de estado do FireGuard, cobrindo pelo menos atualização de focos, sensores, drones e alteração de papel por Admin.
+
+- [x] Auditar a compatibilidade do stack React/Vite + Express/tRPC com a implantação na Vercel.
+- [x] Configurar build de frontend Vite, saída dist/public e fallback SPA para a Vercel.
+- [x] Tornar a URL da API tRPC configurável para frontend hospedado separadamente.
+- [x] Documentar o limite da implantação Vercel-only e listar exatamente os arquivos/pastas necessários.
+- [x] Validar o build Vercel, a página inicial e a configuração final de implantação.
+- [x] Salvar checkpoint da preparação para Vercel.
+
+> Histórico de adaptação Vercel: o projeto atual é full-stack React/Vite + Express/tRPC; o frontend pode ser implantado diretamente na Vercel, enquanto o servidor Express, OAuth, banco e storage precisam permanecer no backend atual ou ser migrados separadamente para funções compatíveis.
+
+- [x] Adicionar configuração explícita da base URL da API tRPC no cliente usando VITE_API_BASE_URL com fallback local.
+- [x] Salvar novo checkpoint após concluir e validar as adaptações específicas para Vercel.
