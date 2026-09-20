@@ -41,3 +41,4 @@
 
 - [x] Adicionar configuração explícita da base URL da API tRPC no cliente usando VITE_API_BASE_URL com fallback local.
 - [x] Salvar novo checkpoint após concluir e validar as adaptações específicas para Vercel.
+Deploy FireGuard
