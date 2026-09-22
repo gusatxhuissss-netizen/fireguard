@@ -55,6 +55,38 @@ export async function getUserByOpenId(openId: string) {
   return result[0];
 }
 
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result[0];
+}
+
+export async function createLocalUser(data: {
+  openId: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  birthDate: Date;
+  phone: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.insert(users).values({
+    ...data,
+    loginMethod: "email",
+    role: "user",
+    lastSignedIn: new Date(),
+  });
+  return getUserByOpenId(data.openId);
+}
+
+export async function updateUserLastSignedIn(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível");
+  await db.update(users).set({ lastSignedIn: new Date() }).where(eq(users.id, id));
+}
+
 export async function ensureFireguardDemoData() {
   const db = await getDb();
   if (!db) return;
@@ -92,7 +124,19 @@ export async function getFireguardOverview() {
     db.select().from(alerts).orderBy(desc(alerts.createdAt)),
     db.select().from(sensors).orderBy(desc(sensors.updatedAt)),
     db.select().from(drones).orderBy(desc(drones.updatedAt)),
-    db.select().from(users).orderBy(desc(users.createdAt)),
+    db.select({
+      id: users.id,
+      openId: users.openId,
+      name: users.name,
+      email: users.email,
+      loginMethod: users.loginMethod,
+      birthDate: users.birthDate,
+      phone: users.phone,
+      role: users.role,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+      lastSignedIn: users.lastSignedIn,
+    }).from(users).orderBy(desc(users.createdAt)),
   ]);
   return { incidents: incidentRows, reports: reportRows, alerts: alertRows, sensors: sensorRows, drones: droneRows, users: userRows };
 }
