@@ -26,7 +26,7 @@ function GoogleMark() {
 }
 
 function AuthBrand() {
-  return <Link href="/" className="inline-flex items-center gap-3 text-[#10233d] transition-opacity hover:opacity-80"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#ff6b2c] text-white shadow-lg shadow-[#ff6b2c]/20"><Flame className="h-6 w-6 fill-current" /></span><span><strong className="block text-xl font-black tracking-tight">FireGuard</strong><small className="block text-[10px] font-bold uppercase tracking-[.26em] text-[#6a7f96]">Command center</small></span></Link>;
+  return <Link href="/home" className="inline-flex items-center gap-3 text-[#10233d] transition-opacity hover:opacity-80"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#ff6b2c] text-white shadow-lg shadow-[#ff6b2c]/20"><Flame className="h-6 w-6 fill-current" /></span><span><strong className="block text-xl font-black tracking-tight">FireGuard</strong><small className="block text-[10px] font-bold uppercase tracking-[.26em] text-[#6a7f96]">Command center</small></span></Link>;
 }
 
 function AuthShell({ mode, children }: { mode: AuthMode; children: React.ReactNode }) {
