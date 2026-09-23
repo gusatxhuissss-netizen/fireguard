@@ -101,7 +101,7 @@ export const fireguardRouter = router({
     }),
   simulateFire: publicProcedure.mutation(async () => {
     const now = Date.now();
-    const incident = await createFireIncident({ title: "Ocorrência demonstrativa", riskLevel: "critical", status: "active", source: "simulation", latitude: -15.78 + (now % 100) / 10000, longitude: -47.89 - (now % 100) / 10000, temperature: 40, humidity: 14, smoke: 96, windSpeed: 34, isSimulated: true });
+    const incident = await createFireIncident({ title: "Ocorrência demonstrativa · Rio Branco", riskLevel: "critical", status: "active", source: "simulation", latitude: -9.9754 + (now % 100) / 10000, longitude: -67.8249 - (now % 100) / 10000, temperature: 40, humidity: 14, smoke: 96, windSpeed: 34, isSimulated: true });
     await createAlert({ title: "Simulação: nova queimada", message: "Uma ocorrência crítica simulada foi adicionada aos painéis e ao mapa.", severity: "critical", incidentId: incident?.id, isRead: false, isSimulated: true });
     return incident;
   }),

@@ -42,7 +42,7 @@ describe("mutações principais do FireGuard", () => {
   it("cria uma queimada simulada e o respectivo alerta", async () => {
     const caller = appRouter.createCaller(context());
     await caller.fireguard.simulateFire();
-    expect(dbMock.createFireIncident).toHaveBeenCalledWith(expect.objectContaining({ title: "Ocorrência demonstrativa", riskLevel: "critical", isSimulated: true }));
+    expect(dbMock.createFireIncident).toHaveBeenCalledWith(expect.objectContaining({ title: "Ocorrência demonstrativa · Rio Branco", riskLevel: "critical", isSimulated: true }));
     expect(dbMock.createAlert).toHaveBeenCalledWith(expect.objectContaining({ title: "Simulação: nova queimada", incidentId: 44 }));
   });
 

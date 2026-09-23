@@ -107,24 +107,24 @@ export async function ensureFireguardDemoData() {
   if (existing.length) return;
 
   await db.insert(fireIncidents).values([
-    { title: "Reserva Serra Azul", riskLevel: "critical", status: "active", source: "simulation", latitude: -15.7942, longitude: -47.8822, temperature: 39, humidity: 15, smoke: 94, windSpeed: 31, isSimulated: true },
-    { title: "Corredor Verde Leste", riskLevel: "high", status: "monitoring", source: "sensor", latitude: -15.821, longitude: -47.91, temperature: 35, humidity: 22, smoke: 68, windSpeed: 21, isSimulated: true },
-    { title: "Área de Proteção Norte", riskLevel: "medium", status: "monitoring", source: "drone", latitude: -15.762, longitude: -47.854, temperature: 30, humidity: 34, smoke: 36, windSpeed: 13, isSimulated: true },
-    { title: "Bosque Comunitário", riskLevel: "low", status: "contained", source: "simulation", latitude: -15.846, longitude: -47.933, temperature: 25, humidity: 61, smoke: 12, windSpeed: 7, isSimulated: true },
+    { title: "Reserva Extrativista Chico Mendes · Xapuri", riskLevel: "critical", status: "active", source: "simulation", latitude: -10.6516, longitude: -68.5044, temperature: 39, humidity: 15, smoke: 94, windSpeed: 31, isSimulated: true },
+    { title: "Zona rural de Rio Branco", riskLevel: "high", status: "monitoring", source: "sensor", latitude: -9.9754, longitude: -67.8249, temperature: 35, humidity: 22, smoke: 68, windSpeed: 21, isSimulated: true },
+    { title: "Floresta Estadual do Antimary", riskLevel: "medium", status: "monitoring", source: "drone", latitude: -9.3333, longitude: -68.1833, temperature: 30, humidity: 34, smoke: 36, windSpeed: 13, isSimulated: true },
+    { title: "Parque Nacional da Serra do Divisor", riskLevel: "low", status: "contained", source: "simulation", latitude: -7.45, longitude: -73.66, temperature: 25, humidity: 61, smoke: 12, windSpeed: 7, isSimulated: true },
   ]);
   await db.insert(sensors).values([
-    { name: "FG-SEN-014", location: "Reserva Serra Azul", status: "alert", latitude: -15.7942, longitude: -47.8822, temperature: 39, humidity: 15, smoke: 94, windSpeed: 31, isSimulated: true },
-    { name: "FG-SEN-021", location: "Corredor Verde Leste", status: "online", latitude: -15.821, longitude: -47.91, temperature: 35, humidity: 22, smoke: 68, windSpeed: 21, isSimulated: true },
-    { name: "FG-SEN-008", location: "Área de Proteção Norte", status: "online", latitude: -15.762, longitude: -47.854, temperature: 30, humidity: 34, smoke: 36, windSpeed: 13, isSimulated: true },
+    { name: "FG-SEN-014", location: "Reserva Chico Mendes · Xapuri", status: "alert", latitude: -10.6516, longitude: -68.5044, temperature: 39, humidity: 15, smoke: 94, windSpeed: 31, isSimulated: true },
+    { name: "FG-SEN-021", location: "Rio Branco · zona rural", status: "online", latitude: -9.9754, longitude: -67.8249, temperature: 35, humidity: 22, smoke: 68, windSpeed: 21, isSimulated: true },
+    { name: "FG-SEN-008", location: "Floresta do Antimary", status: "online", latitude: -9.3333, longitude: -68.1833, temperature: 30, humidity: 34, smoke: 36, windSpeed: 13, isSimulated: true },
   ]);
   await db.insert(drones).values([
-    { name: "Águia 01", area: "Setor Central", status: "investigating", battery: 72, latitude: -15.7942, longitude: -47.8822, lastFlightAt: new Date(), isSimulated: true },
-    { name: "Águia 02", area: "Setor Leste", status: "patrolling", battery: 88, latitude: -15.821, longitude: -47.91, lastFlightAt: new Date(), isSimulated: true },
-    { name: "Águia 03", area: "Setor Norte", status: "charging", battery: 34, latitude: -15.762, longitude: -47.854, lastFlightAt: new Date(), isSimulated: true },
+    { name: "Águia 01", area: "Xapuri · Reserva Chico Mendes", status: "investigating", battery: 72, latitude: -10.6516, longitude: -68.5044, lastFlightAt: new Date(), isSimulated: true },
+    { name: "Águia 02", area: "Rio Branco · zona rural", status: "patrolling", battery: 88, latitude: -9.9754, longitude: -67.8249, lastFlightAt: new Date(), isSimulated: true },
+    { name: "Águia 03", area: "Antimary · setor florestal", status: "charging", battery: 34, latitude: -9.3333, longitude: -68.1833, lastFlightAt: new Date(), isSimulated: true },
   ]);
   await db.insert(alerts).values([
-    { title: "Risco crítico detectado", message: "Leituras simuladas de fumaça e temperatura exigem atenção na Reserva Serra Azul.", severity: "critical", isRead: false, isSimulated: true },
-    { title: "Drone em rota de verificação", message: "Águia 01 está investigando o setor central com telemetria simulada.", severity: "warning", isRead: false, isSimulated: true },
+    { title: "Risco crítico detectado", message: "Leituras simuladas de fumaça e temperatura exigem atenção na Reserva Chico Mendes, em Xapuri.", severity: "critical", isRead: false, isSimulated: true },
+    { title: "Drone em rota de verificação", message: "Águia 01 está investigando a região de Xapuri com telemetria simulada.", severity: "warning", isRead: false, isSimulated: true },
   ]);
 }
 
