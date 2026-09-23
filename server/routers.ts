@@ -33,6 +33,7 @@ export const appRouter = router({
     register: publicProcedure
       .input(z.object({
         name: z.string().trim().min(3, "Informe seu nome completo."),
+        companyName: z.string().trim().min(2, "Informe o nome da empresa."),
         email: emailSchema,
         password: passwordSchema,
         confirmPassword: z.string(),
@@ -55,6 +56,7 @@ export const appRouter = router({
           user = await createLocalUser({
             openId,
             name: input.name,
+            companyName: input.companyName,
             email,
             passwordHash,
             birthDate: new Date(`${input.birthDate}T00:00:00.000Z`),

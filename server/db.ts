@@ -65,6 +65,7 @@ export async function getUserByEmail(email: string) {
 export async function createLocalUser(data: {
   openId: string;
   name: string;
+  companyName: string;
   email: string;
   passwordHash: string;
   birthDate: Date;
@@ -128,6 +129,7 @@ export async function getFireguardOverview() {
       id: users.id,
       openId: users.openId,
       name: users.name,
+      companyName: users.companyName,
       email: users.email,
       loginMethod: users.loginMethod,
       birthDate: users.birthDate,
