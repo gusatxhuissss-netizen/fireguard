@@ -47,7 +47,7 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         const email = input.email;
         const existing = await getUserByEmail(email);
-        if (existing) throw new TRPCError({ code: "CONFLICT", message: "Já existe uma conta com este e-mail." });
+        if (existing) throw new TRPCError({ code: "CONFLICT", message: "Este e-mail já está cadastrado." });
 
         const openId = `email:${createHash("sha256").update(email).digest("hex")}`;
         const passwordHash = await hashPassword(input.password);
@@ -59,14 +59,16 @@ export const appRouter = router({
             companyName: input.companyName,
             email,
             passwordHash,
-            birthDate: new Date(`${input.birthDate}T00:00:00.000Z`),
+            birthDate: input.birthDate,
             phone: input.phone,
           });
         } catch (error) {
-          if (String(error).toLowerCase().includes("duplicate") || String(error).toLowerCase().includes("unique")) {
-            throw new TRPCError({ code: "CONFLICT", message: "Já existe uma conta com este e-mail." });
+          const databaseError = String(error).toLowerCase();
+          if (databaseError.includes("duplicate") || databaseError.includes("unique")) {
+            throw new TRPCError({ code: "CONFLICT", message: "Este e-mail já está cadastrado." });
           }
-          throw error;
+          console.error("[Auth] Local registration failed", error);
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Não foi possível criar sua conta agora. Tente novamente." });
         }
         if (!user) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Não foi possível criar sua conta." });
 

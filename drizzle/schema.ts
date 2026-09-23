@@ -12,12 +12,12 @@ import {
 
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  openId: varchar("openId", { length: 128 }).notNull().unique(),
   name: text("name"),
   companyName: varchar("companyName", { length: 180 }),
   email: varchar("email", { length: 320 }).unique(),
   passwordHash: varchar("passwordHash", { length: 255 }),
-  birthDate: date("birthDate"),
+  birthDate: date("birthDate", { mode: "string" }),
   phone: varchar("phone", { length: 32 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "monitor", "admin"]).default("user").notNull(),

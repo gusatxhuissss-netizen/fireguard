@@ -62,23 +62,35 @@ export async function getUserByEmail(email: string) {
   return result[0];
 }
 
-export async function createLocalUser(data: {
+export type LocalUserData = {
   openId: string;
   name: string;
   companyName: string;
   email: string;
   passwordHash: string;
-  birthDate: Date;
+  birthDate: string;
   phone: string;
-}) {
+};
+
+export function buildLocalUserInsert(data: LocalUserData) {
+  return {
+    openId: data.openId,
+    name: data.name,
+    companyName: data.companyName,
+    email: data.email,
+    passwordHash: data.passwordHash,
+    birthDate: data.birthDate,
+    phone: data.phone,
+    loginMethod: "email" as const,
+    role: "user" as const,
+    lastSignedIn: new Date(),
+  };
+}
+
+export async function createLocalUser(data: LocalUserData) {
   const db = await getDb();
   if (!db) throw new Error("Banco de dados indisponível");
-  await db.insert(users).values({
-    ...data,
-    loginMethod: "email",
-    role: "user",
-    lastSignedIn: new Date(),
-  });
+  await db.insert(users).values(buildLocalUserInsert(data));
   return getUserByOpenId(data.openId);
 }
 
